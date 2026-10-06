@@ -55,7 +55,11 @@ export type Config = {
 
 const themeConfig: Config = {
   templateName: 'Materialize',
-  homePageUrl: '/dashboards/crm',
+  // TODO: point this at the real post-login dashboard once one is built
+  // (see PROGRESS.md - web panel module). The demo dashboards were
+  // removed as out-of-scope template content; account-settings is the
+  // only real authenticated page that exists right now.
+  homePageUrl: '/pages/account-settings',
   settingsCookieName: 'materialize-mui-next-demo-1',
   mode: 'system', // 'system', 'light', 'dark'
   skin: 'default', // 'default', 'bordered'

@@ -12,6 +12,14 @@ import { i18n } from '@configs/i18n'
 // Util Imports
 import { getServerMode, getSystemMode } from '@core/utils/serverHelpers'
 
+// Required for `output: 'export'` - this catch-all only needs to exist
+// for each real locale; truly unmatched paths within a locale still
+// render this same page (Next statically emits it per the params below
+// and serves it as that locale's 404 fallback).
+// `[...not-found]` is a required catch-all (at least one segment), so an
+// empty array doesn't actually match it - use a placeholder segment.
+export const generateStaticParams = () => i18n.locales.map(lang => ({ lang, 'not-found': ['404'] }))
+
 const NotFoundPage = async (props: { params: Promise<{ lang: string }> }) => {
   const params = await props.params
 
