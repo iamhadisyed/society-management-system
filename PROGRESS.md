@@ -150,13 +150,16 @@ Legend: [ ] not started · [~] in progress · [x] done
 - [ ] All triggers wired (bills, complaints, SOS, blood, forms, visitors, notices, events, polls, bookings)
 - [ ] Bulk batched sends
 
-## 19. Web Panel (Next.js + Materialize) — awaiting template upload
-- [ ] Template explored & demo content stripped
-- [ ] Auth pages wired to Sanctum
-- [ ] Role/permission-based dynamic navigation
+## 19. Web Panel (Next.js + Materialize)
+- [x] Template explored & demo content stripped (academy/ecommerce/invoice/logistics/email/chat/calendar/kanban/roles/permissions/user apps, charts/forms/react-table/widget-wizard-dialog-examples/pricing/faq/user-profile pages, crm/analytics/academy/ecommerce/logistics dashboards, front-pages marketing site, duplicate auth-variant showcase pages — see docs/decisions.md)
+- [x] NextAuth + Prisma removed entirely; replaced with client-side token auth (AuthContext + apiClient hitting the Laravel API) — AuthGuard/GuestOnlyRoute rewired as client components
+- [x] Static export build (output: 'export') verified — `npm run build` succeeds, 26 pages, zero errors, `out/` produced
+- [x] generateStaticParams added for [lang] (en/ur) and the [...not-found] catch-all
+- [x] Locales changed to en/ur (dropped template's fr/ar), ur RTL, placeholder ur.json dictionary flagged for real translation
+- [ ] Role/permission-based dynamic navigation (current nav/search data still references deleted demo routes — needs a real rewrite once actual panel screens exist)
 - [ ] Platform Admin Panel screens
-- [ ] Society Management Panel screens (all roles/dashboards)
-- [ ] Static export build (output: 'export') verified
+- [ ] Society Management Panel screens (all roles/dashboards) — homePageUrl currently points at account-settings as a placeholder (no real dashboard built yet)
+- [ ] Auth pages wired to Sanctum beyond login (register/forgot-password/reset-password/verify-email are UI-only placeholders, not yet calling real endpoints)
 
 ## 20. Mobile App (React Native)
 - [ ] Project bootstrap + navigation shell

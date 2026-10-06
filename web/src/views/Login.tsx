@@ -15,11 +15,8 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Checkbox from '@mui/material/Checkbox'
 import Button from '@mui/material/Button'
 import FormControlLabel from '@mui/material/FormControlLabel'
-import Divider from '@mui/material/Divider'
-import Alert from '@mui/material/Alert'
 
 // Third-party Imports
-import { signIn } from 'next-auth/react'
 import { Controller, useForm } from 'react-hook-form'
 import { valibotResolver } from '@hookform/resolvers/valibot'
 import { object, minLength, string, email, pipe, nonEmpty } from 'valibot'
@@ -41,8 +38,12 @@ import themeConfig from '@configs/themeConfig'
 import { useImageVariant } from '@core/hooks/useImageVariant'
 import { useSettings } from '@core/hooks/useSettings'
 
+// Context Imports
+import { useAuth } from '@/contexts/AuthContext'
+
 // Util Imports
 import { getLocalizedUrl } from '@/utils/i18n'
+import { ApiError } from '@/libs/apiClient'
 
 type ErrorType = {
   message: string[]
@@ -77,6 +78,7 @@ const Login = ({ mode }: { mode: Mode }) => {
   const searchParams = useSearchParams()
   const { lang: locale } = useParams()
   const { settings } = useSettings()
+  const { login } = useAuth()
 
   const {
     control,
@@ -85,8 +87,8 @@ const Login = ({ mode }: { mode: Mode }) => {
   } = useForm<FormData>({
     resolver: valibotResolver(schema),
     defaultValues: {
-      email: 'admin@materialize.com',
-      password: 'admin'
+      email: '',
+      password: ''
     }
   })
 
@@ -103,22 +105,23 @@ const Login = ({ mode }: { mode: Mode }) => {
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
 
   const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
-    const res = await signIn('credentials', {
-      email: data.email,
-      password: data.password,
-      redirect: false
-    })
+    try {
+      // Society-staff login (email + password). Platform Admin and resident
+      // logins use separate endpoints/forms - see
+      // backend/app/Http/Controllers/Api/V1/Auth/AuthController.php.
+      await login({ kind: 'staff', email: data.email, password: data.password })
 
-    if (res && res.ok && res.error === null) {
-      // Vars
       const redirectURL = searchParams.get('redirectTo') ?? '/'
 
       router.replace(getLocalizedUrl(redirectURL, locale as Locale))
-    } else {
-      if (res?.error) {
-        const error = JSON.parse(res.error)
+    } catch (error) {
+      if (error instanceof ApiError) {
+        const body = error.body as { message?: string; errors?: Record<string, string[]> } | null
+        const message = body?.errors ? Object.values(body.errors).flat() : [body?.message ?? error.message]
 
-        setErrorState(error)
+        setErrorState({ message })
+      } else {
+        setErrorState({ message: ['Something went wrong. Please try again.'] })
       }
     }
   }
@@ -151,12 +154,6 @@ const Login = ({ mode }: { mode: Mode }) => {
             <Typography variant='h4'>{`Welcome to ${themeConfig.templateName}!👋🏻`}</Typography>
             <Typography>Please sign-in to your account and start the adventure</Typography>
           </div>
-          <Alert icon={false} className='bg-[var(--mui-palette-primary-lightOpacity)]'>
-            <Typography variant='body2' color='primary.main'>
-              Email: <span className='font-medium'>admin@materialize.com</span> / Pass:{' '}
-              <span className='font-medium'>admin</span>
-            </Typography>
-          </Alert>
 
           <form
             noValidate
@@ -243,16 +240,6 @@ const Login = ({ mode }: { mode: Mode }) => {
               </Typography>
             </div>
           </form>
-          <Divider className='gap-3'>or</Divider>
-          <Button
-            color='secondary'
-            className='self-center text-textPrimary'
-            startIcon={<img src='/images/logos/google.png' alt='Google' width={22} />}
-            sx={{ '& .MuiButton-startIcon': { marginInlineEnd: 3 } }}
-            onClick={() => signIn('google')}
-          >
-            Sign in with Google
-          </Button>
         </div>
       </div>
     </div>
