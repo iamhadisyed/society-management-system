@@ -55,7 +55,10 @@ return new class extends Migration
 
         Schema::create('domestic_staff_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('domestic_staff_id')->constrained()->cascadeOnDelete();
+            // Table is `domestic_staff` (singular - "staff" doesn't pluralize
+            // normally), but constrained() without an argument guesses
+            // `domestic_staffs` from the column name - must be explicit.
+            $table->foreignId('domestic_staff_id')->constrained('domestic_staff')->cascadeOnDelete();
             $table->foreignId('logged_by')->constrained('users')->restrictOnDelete();
             $table->dateTime('entry_time');
             $table->dateTime('exit_time')->nullable();
