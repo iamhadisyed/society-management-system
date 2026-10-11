@@ -55,3 +55,30 @@ This plan has been executed (see git history on `task/web-static-export-fixes`);
 ## Currency/locale
 - All monetary columns are `decimal(12,2)` in PKR, no multi-currency.
 - All datetime columns stored UTC in DB (Laravel default), converted to `Asia/Karachi` and `DD-MM-YYYY` at the presentation layer (API resources / Blade PDF templates), per spec.
+
+## Branding: logo + favicon (replacing template placeholders)
+
+The web panel shipped with the Materialize template's default abstract
+zigzag logo mark and Laravel/Next.js placeholder favicons — not real
+branding. Replaced with:
+
+- **Mark**: a flat, minimal rounded-square tile containing a simple white
+  house pictogram (roof + wall + door cutout), no gradients/shading, in
+  `web/src/@core/svg/Logo.tsx`. Chosen per user direction: wordmark =
+  "Society" (full product name shown as text beside the icon, already
+  wired via `themeConfig.templateName` in `Logo.tsx`'s wrapper component),
+  style = modern minimal/flat, color = purple/white (matches the original
+  spec's description of the resident app as "soft purple/white
+  card-based UI").
+- **Color**: `primaryColorConfig.ts`'s default `primary-1` changed from
+  `#666CFF` (blue-indigo) to a genuine purple (`light #A78BFA` / `main
+  #7C3AED` / `dark #5B21B6`, violet-500 family) so the whole app's default
+  theme, not just the static logo, matches the purple/white direction.
+  `primary-2..5` (alternate user-selectable theme colors) left untouched.
+- **Wordmark text**: `themeConfig.templateName` changed from `'Materialize'`
+  to `'Society'`.
+- **Favicons**: regenerated from the same mark (rasterized via
+  `cairosvg`/`Pillow`, embedding 16/32/48px PNG frames in a single
+  multi-size `.ico`) and used to replace both `web/src/app/favicon.ico`
+  (was the default Next.js icon) and `backend/public/favicon.ico` (was
+  empty/unset).
