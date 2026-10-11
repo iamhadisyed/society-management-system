@@ -54,7 +54,7 @@ export type Config = {
 }
 
 const themeConfig: Config = {
-  templateName: 'Materialize',
+  templateName: 'Society',
   // TODO: point this at the real post-login dashboard once one is built
   // (see PROGRESS.md - web panel module). The demo dashboards were
   // removed as out-of-scope template content; account-settings is the
