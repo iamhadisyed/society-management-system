@@ -1,8 +1,19 @@
-// Next Imports
-import { cookies } from 'next/headers'
-
-// Third-party Imports
-import 'server-only'
+/**
+ * Static-export note (see docs/decisions.md): these used to read
+ * cookies() server-side to pre-render the user's saved theme
+ * preference and avoid a flash on first paint. There is no per-request
+ * server under static export, so that's no longer possible - these now
+ * just return the configured defaults at build time. The *real* saved
+ * preference is picked up client-side after mount by
+ * SettingsProvider's useObjectCookie (src/@core/contexts/settingsContext.tsx)
+ * and MUI's InitColorSchemeScript, exactly as before; the only change
+ * is a brief flash of the default theme on first load instead of none,
+ * which is an inherent tradeoff of static hosting with no server.
+ *
+ * Function names/signatures are kept async and unchanged so every
+ * existing call site (layout.tsx, Providers.tsx, and ~25 page.tsx
+ * files that do `const mode = await getMode()`) needs no changes.
+ */
 
 // Type Imports
 import type { Settings } from '@core/contexts/settingsContext'
@@ -12,29 +23,20 @@ import type { SystemMode } from '@core/types'
 import themeConfig from '@configs/themeConfig'
 
 export const getSettingsFromCookie = async (): Promise<Settings> => {
-  const cookieStore = await cookies()
-
-  const cookieName = themeConfig.settingsCookieName
-
-  return JSON.parse(cookieStore.get(cookieName)?.value || '{}')
+  return {}
 }
 
 export const getMode = async () => {
-  const settingsCookie = await getSettingsFromCookie()
-
-  // Get mode from cookie or fallback to theme config
-  const _mode = settingsCookie.mode || themeConfig.mode
-
-  return _mode
+  return themeConfig.mode
 }
 
 export const getSystemMode = async (): Promise<SystemMode> => {
-  const cookieStore = await cookies()
   const mode = await getMode()
 
-  const colorPrefCookie = (cookieStore.get('colorPref')?.value || 'light') as SystemMode
-
-  return (mode === 'system' ? colorPrefCookie : mode) || 'light'
+  // 'system' can't be resolved without reading the client's OS preference,
+  // which isn't available at build time - fall back to light, same as the
+  // client-side InitColorSchemeScript does before it corrects itself.
+  return (mode === 'system' ? 'light' : mode) || 'light'
 }
 
 export const getServerMode = async () => {

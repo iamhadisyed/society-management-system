@@ -44,7 +44,7 @@ const Layout = async (props: ChildrenType & { params: Promise<{ lang: string }> 
 
   return (
     <Providers direction={direction}>
-      <AuthGuard locale={lang}>
+      <AuthGuard>
         <LayoutWrapper
           systemMode={systemMode}
           verticalLayout={

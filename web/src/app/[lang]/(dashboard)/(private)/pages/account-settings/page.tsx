@@ -9,17 +9,15 @@ import AccountSettings from '@views/pages/account-settings'
 
 const AccountTab = dynamic(() => import('@views/pages/account-settings/account'))
 const SecurityTab = dynamic(() => import('@views/pages/account-settings/security'))
-const BillingPlansTab = dynamic(() => import('@views/pages/account-settings/billing-plans'))
 const NotificationsTab = dynamic(() => import('@views/pages/account-settings/notifications'))
-const ConnectionsTab = dynamic(() => import('@views/pages/account-settings/connections'))
 
 // Vars
+// billing-plans and connections tabs were removed - demo-only content with no
+// corresponding real feature (see docs/decisions.md).
 const tabContentList = (): { [key: string]: ReactElement } => ({
   account: <AccountTab />,
   security: <SecurityTab />,
-  'billing-plans': <BillingPlansTab />,
-  notifications: <NotificationsTab />,
-  connections: <ConnectionsTab />
+  notifications: <NotificationsTab />
 })
 
 const AccountSettingsPage = () => {

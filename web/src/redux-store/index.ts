@@ -1,19 +1,13 @@
 // Third-party Imports
 import { configureStore } from '@reduxjs/toolkit'
 
-// Slice Imports
-import chatReducer from '@/redux-store/slices/chat'
-import calendarReducer from '@/redux-store/slices/calendar'
-import kanbanReducer from '@/redux-store/slices/kanban'
-import emailReducer from '@/redux-store/slices/email'
-
+// The chat/calendar/kanban/email demo slices were removed along with
+// their demo apps (see docs/decisions.md). Kept the store/Provider
+// scaffolding in place (ReduxProvider still wraps the app in
+// Providers.tsx) in case a real feature needs client-side shared state
+// later - add its slice to this reducer map when that happens.
 export const store = configureStore({
-  reducer: {
-    chatReducer,
-    calendarReducer,
-    kanbanReducer,
-    emailReducer
-  },
+  reducer: {},
   middleware: getDefaultMiddleware => getDefaultMiddleware({ serializableCheck: false })
 })
 
