@@ -73,7 +73,10 @@ return new class extends Migration
             $table->timestamp('certified_at')->nullable();
             $table->timestamps();
 
-            $table->unique(['election_position_id', 'election_candidate_id']);
+            // Explicit short name: the auto-generated
+            // "election_results_election_position_id_election_candidate_id_unique"
+            // is 66 chars, over MySQL's 64-char identifier limit.
+            $table->unique(['election_position_id', 'election_candidate_id'], 'election_results_position_candidate_unique');
         });
     }
 
