@@ -82,3 +82,20 @@ branding. Replaced with:
   multi-size `.ico`) and used to replace both `web/src/app/favicon.ico`
   (was the default Next.js icon) and `backend/public/favicon.ico` (was
   empty/unset).
+
+## MySQL identifier length limit (election_results unique index)
+
+A third instance of the "passes on SQLite, fails on real MySQL"
+schema-bug class (see the `domestic_staff_logs` FK entry above):
+Laravel's auto-generated name for the composite unique index on
+`election_results` (`election_position_id` + `election_candidate_id`)
+is `election_results_election_position_id_election_candidate_id_unique`
+- 66 characters, over MySQL's hard 64-character identifier limit
+(errno 1059). SQLite has no such limit, so it never surfaced locally.
+
+Fixed by giving that index an explicit short name
+(`election_results_position_candidate_unique`). Audited every other
+composite `unique()`/`index()` and `foreignId()`-generated constraint
+name across all 18 migration files by computing Laravel's naming
+convention and its length directly - this was the only one over the
+limit.
